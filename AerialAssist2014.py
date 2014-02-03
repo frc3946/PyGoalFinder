@@ -31,8 +31,8 @@ def get_blue_hue(img):
         #make sure that you convert them to opencv        
         #upper = [140, 255, 255]
         #lower = [100, 200, 200]
-        upper = np.array([255, 255, 160],np.uint8)
-        lower = np.array([70, 254, 60],np.uint8)
+        upper = np.array([255, 255, 180],np.uint8)
+        lower = np.array([60, 254, 40],np.uint8)
         #filter to only blue and return image
         only_blue = cv2.inRange(hsv_img, lower, upper)
         return only_blue
@@ -61,7 +61,7 @@ def getDistFromCenter():
         #read img into opencv format
         img = cv2.imread('image.jpg')
     else:
-        img = cv2.imread('C:\Files\Work\FIRST\image3.jpg')
+        img = cv2.imread('C:\Temp\image.jpg')
            
     GlobalWidth, GlobalHeight, depth = img.shape
     #optionally resize by commenting out this line. It didn't have much impact, so no biggie.
@@ -82,8 +82,8 @@ def getDistFromCenter():
     goals_img = blue_only.copy()
     
     if showPrint: 
-        cv2.imshow('contoursImg', blue_only)
-        cv2.waitKey(0)
+        cv2.imshow('blue_only', blue_only)
+        cv2.waitKey(1)
         
     #grab contours in image with basic search
     contours, hierarchy = cv2.findContours(blue_only, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
@@ -103,13 +103,13 @@ def getDistFromCenter():
         #if showPrint: print cv2.contourArea(cnt)
        
         if showPrint:      
-            contoursImg = blue_only.copy()
-            cv2.drawContours(contoursImg, contours, i, (156,156,156), 3)
-            cv2.imshow('contoursImg', contoursImg)
+            contoursImg = img.copy()
+            cv2.drawContours(contoursImg, contours, i, (255,255,255), 1)
+            cv2.imshow('orginal', contoursImg)
             print "Contour area:", cv2.contourArea(cnt)
             cv2.waitKey(0)
         
-        if (200 < cv2.contourArea(cnt) < 800):
+        if (200 < cv2.contourArea(cnt) < 1000):
             #temporarily grab convex hull and stuf for each contour
             rect = cv2.convexHull(cnt)
             minRect = cv2.minAreaRect(rect)
@@ -123,15 +123,14 @@ def getDistFromCenter():
                 width = minRect[1][1]
                 height = minRect[1][0] 
                 
-            x1 = int(minRect[0][0])
-            y1 = int(minRect[0][1])  
+            x1 = int(minRect[0][0])             
             
             if height:
                 ratio = width / height
             else:
                 ratio = 0
              #target tape?
-            if (.08 < ratio < .8):
+            if (.08 < ratio < .25):
                if showPrint: 
                     print 'target tape found at ', minRect[0][0], ", ", minRect[0][1]
                targetDistance = get_disp_to_wall(GlobalWidth, width)
@@ -160,12 +159,13 @@ def getDistFromCenter():
                 print 'width:', width
                 print 'height:', height
                 print 'degree:', degree
+                contoursImg = img.copy()
                 box = cv2.cv.BoxPoints(minRect)
                 box = np.int0(box)
-                cv2.drawContours(contoursImg,[box],0,(156,156,156),1)               
+                cv2.drawContours(contoursImg,[box],0,(255,255,255),1)               
                 #retval = cv2.boundingRect(rect)
                 #print 'retval:', retval
-                cv2.imshow('contoursImg', contoursImg)
+                cv2.imshow('orginal', contoursImg)
                 print 'ratio', ratio
                 cv2.waitKey(0)
                 
